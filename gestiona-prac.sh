@@ -26,7 +26,7 @@ do
 		echo "Ruta con las cuentas de los alumnos: "
 		read directorio_origen
 		if [ ! -d "$directorio_origen" ]; then
-			echo "El directorio_origen no existe" >> informe-prac.log 2>&1
+			echo "El directorio_origen no existe $(date)" >> informe-prac.log 2>&1
 			echo "Porfavor introduce un directorio que exista: "
 			read directorio_origen
 		fi
@@ -35,17 +35,13 @@ do
 		if [ ! -d $directorio_destino ]; then
 			$(mkdir $directorio_destino)
 		fi
-		echo "Se va a programar la recogida de las prácticas de ASO para mañana a las 8.00. Origen:$directorio_origen. Destino: $directorio_destino "
+		echo "Se va a programar la recogida de las prácticas de ASO para mañana a las 8.00. Origen:$directorio_origen. Destino: $directorio_destino"
 		echo "Está de acuerdo (s/n)?"
 		read acuerdo
-		if [ $acuerdo -eq "s" ]; then
-			sudo crontab -l > cron_bkp
-			sudo echo "0 8 * * * sudo /home/recoge-prac.sh >/dev/null 2>&1" >> cron_bkp
-			sudo crontab cron_bkp
-			sudo rm cron_bkp
-			./recoge-prac.sh $directorio_origen $directorio_destino
+		if [ $acuerdo == "s" ]; then
+			cronjob="* 8 * * * /home/frobertbs/Documents/ASO/practica6/recoge-prac.sh $directorio_origen $directorio_destino"
+			(crontab -u frobertbs -l; echo "$cronjob" ) | crontab -u frobertbs -
 		fi
-		
 
 		;;
 	2)
