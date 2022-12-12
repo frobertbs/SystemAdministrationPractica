@@ -26,7 +26,7 @@ do
 		echo "Ruta con las cuentas de los alumnos: "
 		read directorio_origen
 		if [ ! -d "$directorio_origen" ]; then
-			echo "El directorio_origen no existe $(date)" >> informe-prac.log 2>&1
+			echo "$(date) El directorio_origen no existe" >> informe-prac.log 2>&1
 			echo "Porfavor introduce un directorio que exista: "
 			read directorio_origen
 		fi
@@ -50,12 +50,23 @@ do
 		read asignaturaEmpaq
 		echo "Ruta absoluta del directorio de prácticas: "
 		read rutaAbsDirPrac
+		
+		#Comprobamos si el directorio a salvar existe o no 
+		if [ ! -d "$rutaAbsDirPrac" ]; then
+			echo "$(date) El $rutaAbsDirPrac no existe" >> informe-prac.log 2>&1
+			break;
+		fi
+		cd "$rutaAbsDirPrac"
 		echo "Se van a empaquetar las prácticas de la asignatura $asignaturaEmpaq presentes en el directorio $rutaAbsDirPrac"
-		nombreArchivo=$asignatura-$(date '+%y%m%d')
+		
+		nombreArchivo="$asignaturaEmpaq-$(date '+%y%m%d').tgz"
+		echo $nombreArchivo
+		echo $PWD
+		
 		echo "¿Está de acuerdo? (s/n)"
 		read confirmacionEmpaquetado
 		if [ confirmacionEmpaquetado == "s" ]; then
-			tar -cvzf $nombreArchivo.tgz $rutaAbsDirPrac
+			tar -czvf "$nombreArchivo" $rutaAbsDirPrac
 		fi
 		;;
 		
@@ -63,9 +74,12 @@ do
 		echo "Menú 3 – Obtener tamaño y fecha del fichero"
 		echo "Asignatura sobre la que queremos información: "
 		read infoAsignatura
-		nombreArchivo=$asignatura-$(date '+%y%m%d')
-		echo "El fichero generado es aso-221013.tgz y ocupa <n> bytes"
-		tar "$nombreArchivo.tar.tgz" 
-		# date '+%y%m%d	// muestra 221209
+		cd /home/frobertbs/prac/aso/
+		archivo=$(find . -name "*$infoAsignatura*" -print)
+		echo "El fichero generado es $(echo $archivo | cut -c 3-) y ocupa $(wc -c $archivo | cut -d " " -f 1) bytes"
+		;;
+	4)
+		opcion=4
+		;;
 	esac
 done
