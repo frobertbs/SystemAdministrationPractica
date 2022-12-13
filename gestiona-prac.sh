@@ -65,7 +65,7 @@ do
 		
 		echo "¿Está de acuerdo? (s/n)"
 		read confirmacionEmpaquetado
-		if [ confirmacionEmpaquetado == "s" ]; then
+		if [ $confirmacionEmpaquetado == "s" ]; then
 			tar -czvf "$nombreArchivo" $rutaAbsDirPrac
 		fi
 		;;
